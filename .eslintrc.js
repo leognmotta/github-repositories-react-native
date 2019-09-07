@@ -26,5 +26,7 @@ module.exports = {
       },
     ],
     'import/prefer-default-export': 'off',
+    'react/state-in-constructor': 0,
+    'react/prop-types': 0,
   },
 };
