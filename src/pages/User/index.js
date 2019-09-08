@@ -29,6 +29,7 @@ export default class User extends Component {
     loading: true,
     refreshing: false,
     loadingMore: false,
+    reachedStarredLimit: false,
   };
 
   async componentDidMount() {
@@ -36,13 +37,22 @@ export default class User extends Component {
   }
 
   load = async (page = 1) => {
-    const { stars } = this.state;
+    const { stars, reachedStarredLimit } = this.state;
     const { navigation } = this.props;
     const user = navigation.getParam('user');
+
+    if (reachedStarredLimit) return;
 
     const response = await api.get(`/users/${user.login}/starred`, {
       params: { page },
     });
+
+    if (
+      response.data.length === 0 ||
+      (page === 1 && response.data.length < 30)
+    ) {
+      this.setState({ reachedStarredLimit: true });
+    }
 
     this.setState({
       stars: page >= 2 ? [...stars, ...response.data] : response.data,
